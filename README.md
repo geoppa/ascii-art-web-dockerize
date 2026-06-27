@@ -113,6 +113,140 @@ This project adheres tightly to standard HTTP protocol metrics during verificati
 
 ---
 
+## 🐳 Running with Docker
+
+### 1. Build the Docker image
+
+Creates a Docker image from the project's Dockerfile.
+
+```bash
+docker build -t ascii-art-web-dockerize .
+```
+
+---
+
+### 2. Run the application
+
+Creates a new container and starts the web server.
+
+```bash
+docker run -p 8080:8080 ascii-art-web-dockerize
+```
+
+Open your browser:
+
+```text
+http://localhost:8080
+```
+
+---
+
+## 🐳 Useful Docker Commands
+
+### Run with a custom container name
+
+Creates a container named `ascii-web`.
+
+```bash
+docker run --name ascii-web -p 8080:8080 ascii-art-web-dockerize
+```
+
+---
+
+### Run and automatically remove the container
+
+Deletes the container automatically after it stops.
+
+```bash
+docker run --rm -p 8080:8080 ascii-art-web-dockerize
+```
+
+---
+
+### Run with a custom name and automatic cleanup
+
+Creates a named container and removes it after exit.
+
+```bash
+docker run --rm --name ascii-web -p 8080:8080 ascii-art-web-dockerize
+```
+
+---
+
+### Show running containers
+
+Displays only currently running containers.
+
+```bash
+docker ps
+```
+
+---
+
+### Show all containers
+
+Displays both running and stopped containers.
+
+```bash
+docker ps -a
+```
+
+---
+
+### Remove stopped containers
+
+Deletes all stopped containers.
+
+```bash
+docker container prune
+```
+
+---
+
+### Show Docker images
+
+Lists all Docker images stored locally.
+
+```bash
+docker images
+```
+
+---
+
+### Restart an existing container
+
+Starts an existing stopped container.
+
+```bash
+docker start ascii-web
+```
+
+---
+
+### Stop a running container
+
+Stops a running container.
+
+```bash
+docker stop ascii-web
+```
+
+---
+
+## 🐳 Docker Workflow
+
+This project uses a multi-stage Docker build to produce a lightweight production image.
+
+The workflow consists of the following steps:
+
+1. Build the application inside the official Go image.
+2. Compile a static Linux binary (`CGO_ENABLED=0`).
+3. Copy only the binary and required runtime assets into a lightweight Alpine image.
+4. Expose port `8080`.
+5. Start the web server inside the container.
+
+---
+
 ## Run Test Files 
 
 From the root
