@@ -16,3 +16,7 @@ WORKDIR /app
 
 COPY --from=builder /app/ascii-art-web-dockerize .
 
+COPY --from=builder /app/banners ./banners
+COPY --from=builder /app/templates ./templates
+COPY --from=builder /app/static ./static
+
