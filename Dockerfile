@@ -9,3 +9,8 @@ RUN go mod download
 COPY . .
 
 RUN go build -o ascii-art-web-dockerize ./cmd
+
+FROM alpine:latest
+
+WORKDIR /app
+
