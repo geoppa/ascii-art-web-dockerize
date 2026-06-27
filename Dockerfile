@@ -12,6 +12,10 @@ RUN go build -o ascii-art-web-dockerize ./cmd
 
 FROM alpine:latest
 
+LABEL project="ascii-art-web-dockerize"
+LABEL authors="elgeorgiou,gpapadaki"
+LABEL description="Dockerized Go web application for ASCII Art Web"
+
 WORKDIR /app
 
 COPY --from=builder /app/ascii-art-web-dockerize .
