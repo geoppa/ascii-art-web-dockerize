@@ -70,52 +70,115 @@ When a browser connects or invokes actions within the server environment, the so
 
 ---
 
-## 💻 How to Run & Use
+## 💻 How to Run & Manage (Docker Lifecycle)
 
 ### Prerequisites
-Make sure you have **Docker** and **Docker Compose** installed on your system.
+Make sure you have **Docker** and **Docker Compose** installed on your system. 
+*Note: If you encounter a `permission denied` error while running Docker commands, prepend `sudo` to them.*
 
-### 1. Clone the repository
+### 1. Setup & Installation
 ```bash
 git clone <your-repository-url>
 cd ascii-art-web-dockerize
 ```
 
-### 2. Run with Docker Compose (Recommended)
-The easiest way to start the application is using Docker Compose, which automatically builds the image and maps the ports.
+### 2. Build the Application Image
+Build a lightweight production image using the multi-stage Dockerfile setup:
 ```bash
-docker compose up --build
-```
-*Use `docker-compose up --build` if you are using an older Docker version.*
-
-### 3. Alternative: Run with native Docker commands
-If you prefer building and running the image manually without Compose:
-
-#### Build the Docker Image:
-```bash
-docker build -t ascii-art-web .
+sudo docker image build -t ascii-art-web-dockerize .
 ```
 
-#### Run the Container:
+### 3. Run the Container
+Launch the containerized application in the background (detached mode) mapping port 8080:
 ```bash
-docker run -p 8080:8080 --name ascii-art-container ascii-art-web
+sudo docker container run -p 8080:8080 -d --name ascii-art-container ascii-art-web-dockerize
 ```
 
-### 4. Open in Browser
-Open your preferred web browser and navigate to:
+### 4. Check Status & Logs
+Verify if the container is running properly and monitor operational application output logs:
+```bash
+# Check running containers and ports mapping
+sudo docker ps
+
+# View container internal logs (useful for troubleshooting)
+sudo docker logs ascii-art-container
+```
+
+### 5. Access the Application
+Open your web browser and navigate to:
 ```text
 http://localhost:8080
 ```
 
-### 5. Stop the Application
-* If running via **Docker Compose**, press `Ctrl + C` or run:
-  ```bash
-  docker compose down
-  ```
-* If running via **Docker CLI**, run:
-  ```bash
-  docker stop ascii-art-container
-  ```
+### 6. Stop and Start the Container
+Manage the active environment without needing a complete rebuild:
+```bash
+# Temporarily pause execution
+sudo docker container stop ascii-art-container
+
+# Resume execution
+sudo docker container start ascii-art-container
+```
+
+### 7. Delete Environment Assets (Clean Up)
+Completely remove container files and system images to free storage space or prepare for clean builds (Zone01 Garbage Collection requirement):
+```bash
+# Remove the container instance (Must stop it first)
+sudo docker container rm ascii-art-container
+
+# Remove the application Docker image
+sudo docker image rm -f ascii-art-web-dockerize
+
+# Garbage collection: purge dangling build cache and orphan images
+sudo docker image prune -f
+```
+
+---
+
+## 📦 Orchestration via Docker Compose (Advanced Method)
+
+Docker Compose simplifies multi-step deployment configurations into a single blueprint manifest, eliminating the need to write complex CLI flags manually.
+
+### Understanding `docker-compose.yml`
+The orchestrator file relies on standard container properties:
+* **`build: .`**: Directs the engine to compile the container binary straight from the local multi-stage `Dockerfile`.
+* **`container_name`**: Locks down a persistent network identifier name (`ascii-art-container`).
+* **`ports`**: Proxies requests from your local system port `8080` into internal production server spaces.
+* **`develop.watch`**: Tracks development workspace files to allow live hot-reloads during modifications.
+
+### Operational CLI Lifecycle Commands
+Execute complex build pipelines using simple orchestration tools:
+
+```bash
+# Build the images and launch the application architecture
+sudo docker compose up --build
+
+# Run in background (detached mode)
+sudo docker compose up -d --build
+
+# Shut down and completely purge all active compose container resources
+sudo docker compose down
+```
+
+---
+
+## 🔄 Live Development Mode (File Watching)
+
+The application includes an advanced development pipeline using Docker Compose Watch. It allows you to modify assets and instantly observe updates without manual rebuild procedures.
+
+### How to Trigger Watch Pipelines
+Start the orchestration engine with development triggers active:
+```bash
+sudo docker compose up --watch
+```
+*Alternatively, if you started using standard `docker compose up`, look at the bottom interactive terminal hotkey prompts.*
+
+### Terminal Hotkeys (Runtime Navigation Control)
+When executing inside the foreground window space, pass immediate operational instructions straight to the orchestration process:
+* **`w` (Enable Watch)**: Toggles the background directory scanner layout live. 
+  * Modifying frontend elements (`/templates`, `/static`) will **instantly sync** inside the filesystem.
+  * Modifying core compilation frameworks (`.go` source streams) triggers an **automated clean container rebuild** event.
+* **`d` (Detach)**: Safely breaks connection visibility away from standard logging layouts, throwing the process stack directly into background processing pools while instantly freeing up your current terminal console prompt.
 
 ---
 
@@ -130,22 +193,32 @@ This project adheres tightly to standard HTTP protocol metrics during verificati
 
 ---
 
+---
+
 ## 🧪 Run Test Files
 
-### Local Environment
-If you have Go installed locally, run tests from the root directory:
 ```bash
 go test ./... -v
 ```
+---
 
-### Inside Docker Container
-To execute the test suite inside an isolated Docker environment:
+## 🧹 Post-Evaluation Clean Up (Garbage Collection)
+
+Always clean up your environment after development or auditing cycles.
+
+Run the following commands to free up storage space and remove all unused artifacts:
 ```bash
-docker run --rm ascii-art-web go test ./... -v
+# Stop and remove all containers, networks, and volumes created by compose
+sudo docker compose down --volumes --rmi all
+
+# Remove any remaining dangling build cache or intermediate image layers
+sudo docker image prune -f
+sudo docker builder prune -f
 ```
 
 ---
 
 ## 👥 Authors
-* **elgeorgiou** - Developer / UI & Render Engineering / Frontend Engineer
-* **gpapadaki** - Developer / Security Optimization / Backend Engineer
+
+* **elgeorgiou** - *Developer / UI & Render Engineering / Frontend Engineer*
+* **gpapadaki** - *Developer / Security Optimization / Backend Engineer*

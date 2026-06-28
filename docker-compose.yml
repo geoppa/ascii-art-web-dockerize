@@ -1,0 +1,45 @@
+services:
+  # The web service configuration for the Go application
+  web:
+    # Look for the Dockerfile in the current directory (.) to build the image automatically
+    build: .
+    
+    # Give a fixed, recognizable name to the container instance
+    container_name: ascii-art-container
+    
+    # Map port 8080 of your host computer to port 8080 inside the container
+    ports:
+      - "8080:8080"
+      
+    # Set internal environment variables if required by your application context
+    environment:
+      - PORT=8080
+      
+    # Policy to restart the container automatically unless it was explicitly stopped by you
+    restart: unless-stopped
+
+    # File watching configuration for hot-reloads and instant updates
+    develop:
+      watch:
+        # Sync frontend templates instantly inside the container without restarting
+        - action: sync
+          path: ./templates
+          target: /app/templates
+
+        # Sync static files (CSS, images) instantly inside the container without restarting
+        - action: sync
+          path: ./static
+          target: /app/static
+
+        # Sync banner text files instantly inside the container without restarting
+        - action: sync
+          path: ./banners
+          target: /app/banners
+
+        # Automatically rebuild and restart the container if any Go source code changes
+        - action: rebuild
+          path: .
+          ignore:
+            - templates/
+            - static/
+            - banners/
