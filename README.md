@@ -1,12 +1,13 @@
-# ASCII Art Web - Zone01
+# ASCII Art Web Dockerize - Zone01
 
-An interactive web application built in Go that transforms user-inputted text into stylized graphic ASCII art using distinct typography banner layouts. 
+An interactive web application built in Go that transforms user-inputted text into stylized graphic ASCII art using distinct typography banner layouts. This version is fully containerized using Docker for consistent development, testing, and production deployment.
 
 ## 🚀 Features
 * **Live Generation:** Convert standard English characters into block-style ASCII visual text.
 * **Banner Styles:** Supports three official core assets: `Standard`, `Shadow`, and `Thinkertoy`.
 * **Safe Input Filtering:** Robust error handling preventing dangerous system payloads or unsupported characters.
 * **Responsive Layout:** Clean UI design displaying persistent output fields and dedicated state handling.
+* **Dockerized Environment:** Fully containerized setup ensuring zero dependency issues across different operating systems.
 
 ---
 
@@ -17,6 +18,7 @@ The project relies on a clean, scalable architectural split to enforce standard 
 ```text
 ascii-art-web/
 ├── banners/               # Target layout text fonts (.txt assets)
+├── cmd/main.go            # Central operational system startup entry point
 ├── internal/              # Core proprietary runtime execution packages
 │   ├── banner/            # Safe text file system input parsing
 │   ├── handlers/          # HTTP request control pipelines & state evaluation
@@ -25,8 +27,9 @@ ascii-art-web/
 │   └── validation/        # Payload structural health constraints
 ├── static/                # Public assets, browser styles (CSS), & favicons
 ├── templates/             # Front-end layout configurations (HTML templates)
-├── cmd/main.go            # Central operational system startup entry point
-└── go.mod                 # Go operational workspace manifest dependency configuration
+├── go.mod                 # Go operational workspace manifest dependency configuration
+├── Dockerfile             # Multi-stage Docker build configuration
+└── docker-compose.yml     # Docker compose orchestration file
 ```
 
 ---
@@ -45,7 +48,7 @@ When a browser connects or invokes actions within the server environment, the so
 
 ### 3. Request Orchestration (`internal/handlers/`)
 * **Role:** Evaluates user interaction contexts and routes network traffic statuses.
-* **Process:** 
+* **Process:**   
   * Rejects unsafe methods (e.g., throwing a `405 Method Not Allowed` header if endpoints receive unsupported request actions).
   * Safely reads form parameters and determines which client responses are required depending on success or internal runtime structural problems.
 
@@ -70,35 +73,49 @@ When a browser connects or invokes actions within the server environment, the so
 ## 💻 How to Run & Use
 
 ### Prerequisites
-Make sure you have **Go** installed on your system (version 1.20 or higher recommended).
+Make sure you have **Docker** and **Docker Compose** installed on your system.
 
 ### 1. Clone the repository
 ```bash
 git clone <your-repository-url>
-cd ascii-art-web
+cd ascii-art-web-dockerize
 ```
 
-### 2. Start the Local Server
-Execute the application entry point using the standard Go environment command:
+### 2. Run with Docker Compose (Recommended)
+The easiest way to start the application is using Docker Compose, which automatically builds the image and maps the ports.
 ```bash
-go run ./cmd
+docker compose up --build
+```
+*Use `docker-compose up --build` if you are using an older Docker version.*
+
+### 3. Alternative: Run with native Docker commands
+If you prefer building and running the image manually without Compose:
+
+#### Build the Docker Image:
+```bash
+docker build -t ascii-art-web .
 ```
 
-You should see an confirmation terminal diagnostic logging out:
-```text
-Server starting at http://localhost:8080
+#### Run the Container:
+```bash
+docker run -p 8080:8080 --name ascii-art-container ascii-art-web
 ```
 
-### 3. Open in Browser
+### 4. Open in Browser
 Open your preferred web browser and navigate to:
 ```text
 http://localhost:8080
 ```
 
-### 4. Create Art
-1. Enter your text inside the input box (supports multi-line inputs).
-2. Choose a banner type style preference (`Standard`, `Shadow`, or `Thinkertoy`).
-3. Press **Generate ASCII Art** to instantly display your output.
+### 5. Stop the Application
+* If running via **Docker Compose**, press `Ctrl + C` or run:
+  ```bash
+  docker compose down
+  ```
+* If running via **Docker CLI**, run:
+  ```bash
+  docker stop ascii-art-container
+  ```
 
 ---
 
@@ -113,146 +130,21 @@ This project adheres tightly to standard HTTP protocol metrics during verificati
 
 ---
 
-## 🐳 Running with Docker
+## 🧪 Run Test Files
 
-### 1. Build the Docker image
-
-Creates a Docker image from the project's Dockerfile.
-
+### Local Environment
+If you have Go installed locally, run tests from the root directory:
 ```bash
-docker build -t ascii-art-web-dockerize .
-```
-
----
-
-### 2. Run the application
-
-Creates a new container and starts the web server.
-
-```bash
-docker run -p 8080:8080 ascii-art-web-dockerize
-```
-
-Open your browser:
-
-```text
-http://localhost:8080
-```
-
----
-
-## 🐳 Useful Docker Commands
-
-### Run with a custom container name
-
-Creates a container named `ascii-web`.
-
-```bash
-docker run --name ascii-web -p 8080:8080 ascii-art-web-dockerize
-```
-
----
-
-### Run and automatically remove the container
-
-Deletes the container automatically after it stops.
-
-```bash
-docker run --rm -p 8080:8080 ascii-art-web-dockerize
-```
-
----
-
-### Run with a custom name and automatic cleanup
-
-Creates a named container and removes it after exit.
-
-```bash
-docker run --rm --name ascii-web -p 8080:8080 ascii-art-web-dockerize
-```
-
----
-
-### Show running containers
-
-Displays only currently running containers.
-
-```bash
-docker ps
-```
-
----
-
-### Show all containers
-
-Displays both running and stopped containers.
-
-```bash
-docker ps -a
-```
-
----
-
-### Remove stopped containers
-
-Deletes all stopped containers.
-
-```bash
-docker container prune
-```
-
----
-
-### Show Docker images
-
-Lists all Docker images stored locally.
-
-```bash
-docker images
-```
-
----
-
-### Restart an existing container
-
-Starts an existing stopped container.
-
-```bash
-docker start ascii-web
-```
-
----
-
-### Stop a running container
-
-Stops a running container.
-
-```bash
-docker stop ascii-web
-```
-
----
-
-## 🐳 Docker Workflow
-
-This project uses a multi-stage Docker build to produce a lightweight production image.
-
-The workflow consists of the following steps:
-
-1. Build the application inside the official Go image.
-2. Compile a static Linux binary (`CGO_ENABLED=0`).
-3. Copy only the binary and required runtime assets into a lightweight Alpine image.
-4. Expose port `8080`.
-5. Start the web server inside the container.
-
----
-
-## Run Test Files 
-
-From the root
-```
 go test ./... -v
 ```
+
+### Inside Docker Container
+To execute the test suite inside an isolated Docker environment:
+```bash
+docker run --rm ascii-art-web go test ./... -v
+```
+
+---
 
 ## 👥 Authors
 * **elgeorgiou** - Developer / UI & Render Engineering / Frontend Engineer

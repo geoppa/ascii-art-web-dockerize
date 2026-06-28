@@ -4,11 +4,15 @@ WORKDIR /app
 
 COPY go.mod .
 
+# Αν υπάρχει αρχείο go.sum στο project σου, αποσχολίασε την επόμενη γραμμή:
+# COPY go.sum .
+
 RUN go mod download
 
 COPY . .
 
-RUN go build -o ascii-art-web-dockerize ./cmd
+# ΔΙΟΡΘΩΣΗ: Προσθήκη CGO_ENABLED=0, GOOS=linux και αλλαγή της διαδρομής σε ./cmd/main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -o ascii-art-web-dockerize ./cmd/main.go
 
 FROM alpine:latest
 
